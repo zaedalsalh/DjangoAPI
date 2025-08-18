@@ -16,8 +16,8 @@ class ServiceRequestSerializer(serializers.ModelSerializer):
 
 class UserrSerializer(serializers.ModelSerializer):
     notifications = NotificationsSerializer(source='notifications_set', many=True, read_only=True)
-    requests_made = ServiceRequestSerializer(source='requests_made', many=True, read_only=True)
-    requests_received = ServiceRequestSerializer(source='requests_received', many=True, read_only=True)
+    requests_made = ServiceRequestSerializer(many=True, read_only=True)
+    requests_received = ServiceRequestSerializer(many=True, read_only=True)
 
     class Meta:
         model = Userr
