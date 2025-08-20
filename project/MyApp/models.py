@@ -20,8 +20,6 @@ class Userr(models.Model):
     IsNotifications = models.BooleanField(default=True)
     IsServices = models.BooleanField(default=True)
 
-    def __str__(self):
-        return f'{self.FullName} - {self.TypeOfService}'
 
 
 class UserRating(models.Model):

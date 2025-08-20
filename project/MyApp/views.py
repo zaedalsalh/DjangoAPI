@@ -18,7 +18,7 @@ from django.conf import settings
 
 
 @api_view(['GET'])
-
+# @permission_classes([IsAuthenticated])
 def AllUserClint(request):
     Alluser = Userr.objects.filter(TypeOfService__in = [2,3,4])
     serializer = UserrSerializer( Alluser , many=True)
@@ -107,7 +107,7 @@ def CreateUser(request):
 def Login(request):
     try:
         user = Userr.objects.get(Email = request.data.get('Email') , Password = request.data.get('Password') )
-        
+        print(user)
         refresh = RefreshToken.for_user(user)
         access_token = str(refresh.access_token)
         
@@ -144,7 +144,7 @@ def refresh_access(request):
 def send_code_to_email(request):
     email = request.data.get("Email")
 
-    if not email:
+    if email == '':
         return Response({"error": "يجب إدخال البريد الإلكتروني"}, status=400)
 
     try:
@@ -167,3 +167,18 @@ def send_code_to_email(request):
         "message": "تم إرسال رمز التحقق إلى البريد الإلكتروني.",
         "code": code 
     }, status=200)
+    
+    
+    
+@api_view(['POST'])
+def rePassword(request):
+    email = request.data.get("Email")
+    oldpassword = request.data.get("OldPassword")
+    Newpassword = request.data.get("NewPassword")
+    try:
+        user = Userr.objects.get(Email = email , Password = oldpassword)
+        user.Password = Newpassword
+        user.save()
+        return Response({"RePassword":"تم التغيير"},status=200)
+    except Userr.DoesNotExist:
+        return Response({"RePassword":"لم يتم  التغيير"},status=200)

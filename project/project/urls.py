@@ -11,6 +11,7 @@ urlpatterns = [
     path('AllUserClint/' ,  views.AllUserClint),
     path('CreateUserClint/' ,  views.CreateUserClient),
     path('CreateUser/' ,  views.CreateUser),
+    path('repassword/' ,  views.rePassword),
     
     # jwt
     path('login/' , views.Login),
