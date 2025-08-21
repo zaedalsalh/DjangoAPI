@@ -14,6 +14,8 @@ urlpatterns = [
     path('repassword/' ,  views.rePassword),
     path('reIsNotifications/<int:id>/' ,  views.reIsNotifications),
     path('reIsServices/<int:id>/' ,  views.reIsServices),
+    path('moviesWithRatings/' ,  views.moviesWithRatings),
+    path('updateUserRating/<int:UserId>' ,  views.updateUserRating),
     
     # jwt
     path('login/' , views.Login),

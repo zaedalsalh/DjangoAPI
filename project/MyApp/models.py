@@ -11,7 +11,7 @@ class Userr(models.Model):
     FullName = models.CharField(max_length=255)
     Email = models.EmailField(unique=True)
     Password = models.CharField(max_length=128)
-    TypeOfService = models.ForeignKey('Services', on_delete=models.CASCADE)
+    TypeOfService = models.ForeignKey(Services, on_delete=models.CASCADE)
     PhoneNumber = models.IntegerField(null=True, blank=True)
     YearsOfExperience = models.IntegerField(null=True, blank=True)
     Location = models.CharField(null=True, blank=True)

@@ -5,7 +5,7 @@ from .models import Userr, UserRating, Notifications, ServiceRequest
 class NotificationsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notifications
-        fields = '__all__'
+        exclude = ['id']
 
 
 class ServiceRequestSerializer(serializers.ModelSerializer):
@@ -22,3 +22,10 @@ class UserrSerializer(serializers.ModelSerializer):
     class Meta:
         model = Userr
         fields = '__all__'
+
+
+class UserRatingSerializer(serializers.ModelSerializer):
+    user = UserrSerializer(source='UserId', read_only=True)
+    class Meta:
+        model = UserRating
+        exclude = ['id' , 'UserId']

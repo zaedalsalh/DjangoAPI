@@ -5,8 +5,7 @@ from rest_framework.decorators import api_view , permission_classes
 from rest_framework.permissions import IsAuthenticated
 
 
-from MyApp.models import Userr , UserRating , ServiceRequest , Notifications
-from MyApp.serializers import UserrSerializer  , NotificationsSerializer
+from MyApp.serializers import UserrSerializer  , NotificationsSerializer , UserRatingSerializer , Userr , UserRating , ServiceRequest , Notifications
 
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -31,19 +30,23 @@ def CreateUserClient(request):
     if serializer.is_valid():
         user = serializer.save()
         
-        full_name = user.FullName
         notification_data = {
         "UserId": user.id,
-        "Title": f" {full_name} مرحباً بالعميل",
+        "Title": f" {user.FullName} مرحباً بالعميل",
         "Description": "نرحب بك في تطبيقنا. نتمنى لك تجربة رائعة مع خدماتنا.",
         "Isrequest": False
                         }
+        
+        UserRating.objects.create(
+            UserId = user,
+            Evaluation = 0.0
+        )
         
         notif_serializer = NotificationsSerializer(data=notification_data)
         if notif_serializer.is_valid():
             notif_serializer.save()
         else:
-            print(notif_serializer.errors)
+            pass
 
         return Response(serializer.data, status=201)
     else:
@@ -53,7 +56,7 @@ def CreateUserClient(request):
   "FullName": "Ahmad Ali",
   "Email": "ahmad@example.com",
   "Password": "securepassword123",
-  "TypeOfService": 1,
+  "TypeOfService": 2,
   "PhoneNumber": 1234567890,
   "YearsOfExperience": 5,
   "Location": "Damascus",
@@ -226,3 +229,29 @@ def reIsServices(request,id):
 
 
 # {"IsServices":"True"}
+
+@api_view(['GET'])
+def moviesWithRatings(request):
+    userrating = UserRating.objects.filter(Evaluation__range=(3.5, 5) , UserId__TypeOfService__in=[2, 3, 4])
+    userrating = UserRatingSerializer(userrating , many=True)
+    return Response(userrating.data)
+
+
+@api_view(['PUT'])
+def updateUserRating(request, UserId):
+    Evaluation = request.data.get('Evaluation')
+    try:
+        user = UserRating.objects.get(UserId = UserId)
+        user.Evaluation = round((user.Evaluation + Evaluation) / 2, 2)
+        user.save()
+        return Response({"OK":"تم تقييم المستخدم"}) 
+    except UserRating.DoesNotExist:
+        return Response({"Error":"لم يجد المستخدم المراد تقييمة"}) 
+    
+'''
+{
+    "Evaluation": 4
+}
+'''
+
+
