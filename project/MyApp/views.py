@@ -39,7 +39,7 @@ def CreateUserClient(request):
         
         UserRating.objects.create(
             UserId = user,
-            Evaluation = 0.0
+            Evaluation = 1.0
         )
         
         notif_serializer = NotificationsSerializer(data=notification_data)
@@ -155,7 +155,7 @@ def refresh_access(request):
     
 
 @api_view(['POST'])
-def send_code_to_email(request):
+def sendCodeToEmail(request):
     email = request.data.get("Email")
 
     if email == '':
@@ -254,4 +254,57 @@ def updateUserRating(request, UserId):
 }
 '''
 
+@api_view(['GET'])
+def getUserById(request , id):
+    try:
+        user = Userr.objects.get(id = id)
+        serializer = UserrSerializer(user)
+        return Response(serializer.data , status=200)
+    except Userr.DoesNotExist:
+        return Response({"Error":"المستخدم غير موجود"})
+    
 
+@api_view(['PUT'])
+def updateUser(request):
+    try:
+        id_user = request.data.get('id')
+        user = Userr.objects.get(id = id_user)
+        user = UserrSerializer(user , data = request.data , partial=True)
+        if user.is_valid():
+            user.save()
+            return Response(user.data , status=200)
+        else:
+            return Response(user.errors , status=400)
+    except Userr.DoesNotExist:
+        return Response({"Error":"لم يتم ايجاد المستخدم"} , status=404)
+
+
+'''
+بامكانك تضيف الحقل الي بدك ياه
+{
+  "id": 1,
+  "FullName": "Ahmad Ali",
+  "TypeOfService": 4,
+  "PhoneNumber": 1000000000,
+  "YearsOfExperience": 5,
+  "Location": "Beirut, Lebanon",
+  "IsNotifications": true,
+  "IsServices": true
+}
+
+'''
+
+@api_view(['DELETE'])
+def deleteUser(request, id_user):
+    try:
+        user = Userr.objects.get(id=id_user)
+        user.delete()
+        return Response({"Ok": "تم حذف المستخدم بنجاح"}, status=200)
+    except Userr.DoesNotExist:
+        return Response({"error": "المستخدم غير موجود"}, status=404)
+
+'''
+تخزين الكود في الداتابيز send_code_email
+انشاء طلب 
+حالة الطلب 
+'''

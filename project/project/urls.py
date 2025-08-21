@@ -16,10 +16,13 @@ urlpatterns = [
     path('reIsServices/<int:id>/' ,  views.reIsServices),
     path('moviesWithRatings/' ,  views.moviesWithRatings),
     path('updateUserRating/<int:UserId>' ,  views.updateUserRating),
+    path('getUserById/<int:id>' ,  views.getUserById),
+    path('updateUser/' ,  views.updateUser),
+    path('deleteUser/<int:id_user>' ,  views.deleteUser),
     
     # jwt
     path('login/' , views.Login),
     path('refresh-access/', views.refresh_access),
     
-    path('send_code_to_email/', views.send_code_to_email),
+    path('sendCodeToEmail/', views.sendCodeToEmail),
 ]
