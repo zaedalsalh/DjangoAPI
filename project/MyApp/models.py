@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.postgres.indexes import HashIndex
 
 class Services(models.Model):
     ServiceName = models.CharField(max_length=255)
@@ -7,12 +7,11 @@ class Services(models.Model):
     def __str__(self):
         return self.ServiceName
 
-
 class Userr(models.Model):
     FullName = models.CharField(max_length=255)
     Email = models.EmailField(unique=True)
     Password = models.CharField(max_length=128)
-    TypeOfService = models.ForeignKey(Services, on_delete=models.CASCADE)
+    TypeOfService = models.ForeignKey('Services', on_delete=models.CASCADE)
     PhoneNumber = models.IntegerField(null=True, blank=True)
     YearsOfExperience = models.IntegerField(null=True, blank=True)
     Location = models.CharField(null=True, blank=True)
@@ -20,6 +19,11 @@ class Userr(models.Model):
     IsNotifications = models.BooleanField(default=True)
     IsServices = models.BooleanField(default=True)
 
+    class Meta:
+        indexes = [
+            HashIndex(fields=['id'], name='id_hash_idx'),
+            HashIndex(fields=['Email'], name='email_hash_idx'),
+        ]
 
 
 class UserRating(models.Model):
