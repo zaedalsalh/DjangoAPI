@@ -11,7 +11,7 @@ class NotificationsSerializer(serializers.ModelSerializer):
 class ServiceRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = ServiceRequest
-        fields = '__all__'
+        exclude = ['id']
 
 
 class UserrSerializer(serializers.ModelSerializer):

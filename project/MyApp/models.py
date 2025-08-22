@@ -47,8 +47,11 @@ class Notifications(models.Model):
 class ServiceRequest(models.Model):
     IdUser = models.ForeignKey(Userr, on_delete=models.CASCADE, related_name='requests_made')
     IdClient = models.ForeignKey(Userr, on_delete=models.CASCADE, related_name='requests_received')
-    Location = models.CharField(null=True, blank=True)
+    Location = models.CharField()
     HourlyPrice = models.IntegerField()
+    UserOrderStatus = models.BooleanField(default=False)
+    ClientOrderStatus = models.BooleanField(default=False)
+    
 
     def __str__(self):
         return f'{self.IdUser} -> {self.IdClient} ({self.HourlyPrice})'

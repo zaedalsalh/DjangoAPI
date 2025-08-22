@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view , permission_classes
 from rest_framework.permissions import IsAuthenticated
 
 
-from MyApp.serializers import UserrSerializer  , NotificationsSerializer , UserRatingSerializer , Userr , UserRating , ServiceRequest , Notifications
+from MyApp.serializers import UserrSerializer  , NotificationsSerializer , UserRatingSerializer , Userr , UserRating , ServiceRequest , Notifications , ServiceRequestSerializer
 
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -72,11 +72,10 @@ def CreateUser(request):
     serializer = UserrSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.save()
-        full_name = user.FullName
-        
+
         notification_data = {
             "UserId": user.id,
-            "Title": f"{full_name} مرحباً",
+            "Title": f"{user.FullName} مرحباً",
             "Description": "نرحب بك في تطبيقنا. نتمنى لك تجربة رائعة.",
             "Isrequest": False
         }
@@ -255,11 +254,17 @@ def updateUserRating(request, UserId):
 '''
 
 @api_view(['GET'])
-def getUserById(request , id):
+def getUserAndClientById(request , id):
     try:
         user = Userr.objects.get(id = id)
         serializer = UserrSerializer(user)
-        return Response(serializer.data , status=200)
+        data = serializer.data
+        if (data['TypeOfService']) == 1 :
+            data.pop('requests_made', None)
+            data.pop('requests_received', None)
+            return Response(data , status=200)
+        else:
+            return Response(data , status=200)    
     except Userr.DoesNotExist:
         return Response({"Error":"المستخدم غير موجود"})
     
@@ -303,8 +308,101 @@ def deleteUser(request, id_user):
     except Userr.DoesNotExist:
         return Response({"error": "المستخدم غير موجود"}, status=404)
 
+@api_view(['POST'])
+def addService(request):
+    serializer = ServiceRequestSerializer(data=request.data)
+
+    if serializer.is_valid():
+        service = serializer.save()
+        
+        notif_to_User = {
+            "UserId": service.IdUser.id,
+            "Title": "تم إرسال طلبك بنجاح",
+            "Description": (
+                f"عزيزي {service.IdUser.FullName}، "
+                f"لقد تم إرسال طلبك إلى {service.IdClient.FullName}. "
+                "سوف يتم إشعارك فور قيام العميل بقبول أو رفض الطلب. "
+            ),
+            "Isrequest": False
+        }
+        notifUser = NotificationsSerializer(data=notif_to_User)
+        if notifUser.is_valid():
+            notifUser.save()
+
+            notif_to_Client = {
+                "UserId": service.IdClient.id,
+                "Title": "لديك طلب جديد",
+                "Description": (
+                    f"عزيزي {service.IdClient.FullName}، "
+                    f"لقد استلمت طلباً جديداً من {service.IdUser.FullName}. "
+                    "يرجى مراجعة تفاصيل الطلب لاتخاذ الإجراء المناسب (قبول أو رفض)."
+                ),
+                "Isrequest": False
+            }
+            notifClient = NotificationsSerializer(data=notif_to_Client)
+            if notifClient.is_valid():
+                notifClient.save()
+            else:
+                print("Notification (client) errors:", notifClient.errors)
+
+        else:
+            print("Notification (user) errors:", notifUser.errors)
+
+        return Response(serializer.data, status=201)
+
+    else:
+        return Response(serializer.errors, status=400)
+
+{
+    "IdUser":"1",
+    "IdClient":"4",
+    "Location":"سوريا - ادلب ",
+    "HourlyPrice":"5"
+}
+@api_view(['GET'])
+def AcceptTheApplication(request, id):
+    try:
+        service = ServiceRequest.objects.get(id=id)
+        service.ClientOrderStatus = True
+        service.save()
+        
+        notif_to_User = {
+            "UserId": service.IdUser.id,
+            "Title": "تم قبول طلبك",
+            "Description": (
+                f"عزيزي {getattr(service.IdUser, 'FullName', service.IdUser.FullName)}, "
+                f"لقد تم قبول طلبك من قبل {getattr(service.IdClient, 'FullName', service.IdClient.FullName)}."
+            ),
+            "Isrequest": True
+        }
+
+        notif_serializer = NotificationsSerializer(data=notif_to_User)
+        if notif_serializer.is_valid():
+            notif_serializer.save()
+        else:
+            print("Notification Error:", notif_serializer.errors)
+
+        return Response({"Ok": "تم قبول الطلب"}, status=200)
+
+    except ServiceRequest.DoesNotExist:
+        return Response({"Error": "الطلب غير موجود"}, status=404)
+
+
+
+@api_view(['DELETE'])
+def Terminado(request, id):
+    try:
+        service = ServiceRequest.objects.get(id=id)
+        Notifications.objects.filter(UserId__in=[service.IdUser.id, service.IdClient.id]).delete()
+        service.delete()
+        return Response({"OK":"تم حذف كلشي"},status=200)
+
+    except ServiceRequest.DoesNotExist:
+        return Response({"Error": "الطلب غير موجود"}, status=404)
+
+
+
+
 '''
 تخزين الكود في الداتابيز send_code_email
-انشاء طلب 
-حالة الطلب 
 '''
