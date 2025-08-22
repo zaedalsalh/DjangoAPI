@@ -50,7 +50,6 @@ class ServiceRequest(models.Model):
     Location = models.CharField()
     HourlyPrice = models.IntegerField()
     UserOrderStatus = models.BooleanField(default=False)
-    ClientOrderStatus = models.BooleanField(default=False)
     
 
     def __str__(self):
