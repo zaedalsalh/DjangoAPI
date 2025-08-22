@@ -28,4 +28,5 @@ urlpatterns = [
     path('refresh-access/', views.refresh_access),
     
     path('sendCodeToEmail/', views.sendCodeToEmail),
+    path('verifyCode/', views.verifyCode),
 ]

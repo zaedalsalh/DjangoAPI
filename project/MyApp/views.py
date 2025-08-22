@@ -1,4 +1,8 @@
 from django.shortcuts import render
+from MyApp.models import EmailCode
+
+from django.utils import timezone
+from datetime import timedelta
 
 from rest_framework.response import Response
 from rest_framework.decorators import api_view , permission_classes
@@ -167,6 +171,11 @@ def sendCodeToEmail(request):
 
     code = get_random_string(length=6, allowed_chars='0123456789')
 
+    EmailCode.objects.create(
+        email = email,
+        code = code,
+        expires_at = timezone.now() + timedelta(minutes=5)
+    )
  
     send_mail(
         subject="رمز التحقق",
@@ -178,11 +187,33 @@ def sendCodeToEmail(request):
 
     return Response({
         "message": "تم إرسال رمز التحقق إلى البريد الإلكتروني.",
-        "code": code 
     }, status=200)
     
     
-    
+@api_view(['POST'])
+def verifyCode(request):
+    email = request.data.get("Email")
+    code = request.data.get("Code")
+
+    if not email or not code:
+        return Response({"error": "البريد الإلكتروني والرمز مطلوبان"}, status=400)
+
+    try:
+        record = EmailCode.objects.filter(
+            email=email,
+            code=code,
+            is_used=False,
+            expires_at__gt=timezone.now()
+        ).latest("created_at")
+    except EmailCode.DoesNotExist:
+        return Response({"error": "رمز غير صالح أو منتهي الصلاحية"}, status=400)
+
+    record.delete()
+
+    return Response({"message": "تم التحقق بنجاح"}, status=200)
+
+
+
 @api_view(['POST'])
 def rePassword(request):
     email = request.data.get("Email")
@@ -400,9 +431,3 @@ def Terminado(request, id):
     except ServiceRequest.DoesNotExist:
         return Response({"Error": "الطلب غير موجود"}, status=404)
 
-
-
-
-'''
-تخزين الكود في الداتابيز send_code_email
-'''

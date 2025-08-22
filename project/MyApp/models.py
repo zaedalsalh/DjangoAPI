@@ -54,3 +54,12 @@ class ServiceRequest(models.Model):
 
     def __str__(self):
         return f'{self.IdUser} -> {self.IdClient} ({self.HourlyPrice})'
+
+
+
+class EmailCode(models.Model):
+    email = models.EmailField()
+    code = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    is_used = models.BooleanField(default=False)

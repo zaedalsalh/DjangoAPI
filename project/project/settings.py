@@ -73,18 +73,18 @@ WSGI_APPLICATION = 'project.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'APIDjango',
-        'USER': 'postgres',
-        'PASSWORD': '123',
-        'HOST': 'localhost',
-        'PORT': '5432',  
+        'NAME': 'postgres',
+        'USER': 'postgres.kxmmprzffnapfxndhefj',
+        'PASSWORD': '681524046Zaed#@',
+        'HOST': 'aws-0-eu-north-1.pooler.supabase.com',
+        'PORT': '6543', 
     }
 }
+
+
 
 
 # Password validation
