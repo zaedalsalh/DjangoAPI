@@ -49,7 +49,7 @@ class ServiceRequest(models.Model):
     IdClient = models.ForeignKey(Userr, on_delete=models.CASCADE, related_name='requests_received')
     Location = models.CharField()
     HourlyPrice = models.IntegerField()
-    UserOrderStatus = models.BooleanField(default=False)
+    ClientOrderStatus = models.BooleanField(default=False)
     
 
     def __str__(self):
