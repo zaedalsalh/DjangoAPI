@@ -1,3 +1,5 @@
+from django.views.decorators.csrf import csrf_exempt
+
 from django.shortcuts import render
 from MyApp.models import EmailCode
 
@@ -27,7 +29,7 @@ def AllUserClint(request):
     serializer = UserrSerializer( Alluser , many=True)
     return Response(serializer.data)
 
-
+@csrf_exempt
 @api_view(['POST'])
 def CreateUserClient(request):
     serializer = UserrSerializer(data=request.data)
