@@ -20,7 +20,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 
 
-
+from django.contrib.auth.hashers import make_password, check_password
 
 @api_view(['GET'])
 # @permission_classes([IsAuthenticated])
@@ -35,7 +35,8 @@ def CreateUserClient(request):
     serializer = UserrSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.save()
-        
+        user.Password = make_password(user.Password)
+        user.save()
         notification_data = {
         "UserId": user.id,
         "Title": f" {user.FullName} مرحباً بالعميل",
@@ -73,21 +74,25 @@ def CreateUserClient(request):
 '''
 
 
+@csrf_exempt
 @api_view(['POST'])
 def CreateUser(request):
     serializer = UserrSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.save()
-
+        user.Password = make_password(user.Password)
+        user.save()
+        
         notification_data = {
             "UserId": user.id,
-            "Title": f"{user.FullName} مرحباً",
+            "Title": f" مرحباً {user.FullName}",
             "Description": "نرحب بك في تطبيقنا. نتمنى لك تجربة رائعة.",
             "Isrequest": False
         }
         notif_serializer = NotificationsSerializer(data=notification_data)
         if notif_serializer.is_valid():
             notif_serializer.save()
+            
         else:
             print(notif_serializer.errors)
 
@@ -114,7 +119,7 @@ Hash index → البحث = O(1) تقريبًا للمطابقة التامة.
 def Login(request):
     try:
         user = Userr.objects.get(Email = request.data.get('Email'))
-        if user.Password == request.data.get('Password'):
+        if check_password(request.data.get('Password'), user.Password):
             # jwt
             refresh = RefreshToken.for_user(user)
             access_token = str(refresh.access_token)
@@ -158,12 +163,12 @@ def refresh_access(request):
 }
 '''
     
-
+    
 @api_view(['POST'])
 def sendCodeToEmail(request):
     email = request.data.get("Email")
 
-    if email == '':
+    if not email:
         return Response({"error": "يجب إدخال البريد الإلكتروني"}, status=400)
 
     try:
@@ -173,12 +178,19 @@ def sendCodeToEmail(request):
 
     code = get_random_string(length=6, allowed_chars='0123456789')
 
-    EmailCode.objects.create(
-        email = email,
-        code = code,
-        expires_at = timezone.now() + timedelta(minutes=5)
+    obj, created = EmailCode.objects.get_or_create(
+        email=email,
+        defaults={
+            "code": code,
+            "expires_at": timezone.now() + timedelta(minutes=5)
+        }
     )
- 
+
+    if not created:
+        obj.code = code
+        obj.expires_at = timezone.now() + timedelta(minutes=5)
+        obj.save()
+
     send_mail(
         subject="رمز التحقق",
         message=f"مرحباً {user.FullName}, رمز التحقق الخاص بك هو: {code}",
@@ -190,6 +202,7 @@ def sendCodeToEmail(request):
     return Response({
         "message": "تم إرسال رمز التحقق إلى البريد الإلكتروني.",
     }, status=200)
+
     
     
 @api_view(['POST'])
@@ -225,7 +238,7 @@ def rePassword(request):
         return Response({"RePassword":"كلمة المرور الجديدة نفسها القديمة "},status=400)
     try:
         user = Userr.objects.get(Email = email)
-        user.Password = Newpassword
+        user.Password = make_password(Newpassword)
         user.save()
         return Response({"RePassword":"تم التغيير"},status=200)
     except Userr.DoesNotExist:
