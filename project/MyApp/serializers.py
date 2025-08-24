@@ -21,7 +21,8 @@ class UserrSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Userr
-        fields = '__all__'
+        exclude = ['Password' , 'IsNotifications' , 'IsServices']
+
 
 
 class UserRatingSerializer(serializers.ModelSerializer):

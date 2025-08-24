@@ -29,6 +29,32 @@ def AllUserClint(request):
     serializer = UserrSerializer( Alluser , many=True)
     return Response(serializer.data)
 
+@api_view(['GET'])
+def AllClintByTypeOfService(request , Type):
+    if Type == 1:
+        return Response({"Error":"هذا مستخدم وليس عميل"})
+    Alluser = Userr.objects.filter(TypeOfService = Type)
+    serializer = UserrSerializer( Alluser , many=True)
+    return Response(serializer.data)
+
+
+
+
+@api_view(['POST'])
+def SearchClint(request):
+    FullName = request.data.get('FullName' , '')
+    Type = request.data.get('Type')
+    if FullName and Type:
+        results = Userr.objects.filter(FullName__icontains=FullName, TypeOfService_id=Type)
+    elif FullName:
+        results = Userr.objects.filter(FullName__icontains=FullName, TypeOfService__in=[2,3,4])
+    else:
+        return Response({"error": "الرجاء إدخال الاسم للبحث"}, status=400)
+
+    serializer = UserrSerializer(results, many=True)
+    return Response(serializer.data)
+
+
 @csrf_exempt
 @api_view(['POST'])
 def CreateUserClient(request):
