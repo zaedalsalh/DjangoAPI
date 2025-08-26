@@ -7,8 +7,8 @@ from django.utils import timezone
 from datetime import timedelta
 
 from rest_framework.response import Response
-from rest_framework.decorators import api_view , permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view , authentication_classes
+
 
 
 from MyApp.serializers import UserrSerializer  , NotificationsSerializer , UserRatingSerializer , Userr , UserRating , ServiceRequest , Notifications , ServiceRequestSerializer
@@ -22,8 +22,19 @@ from django.conf import settings
 
 from django.contrib.auth.hashers import make_password, check_password
 
+
+from .authentication import UserrJWTAuthentication 
+
+
 @api_view(['GET'])
-# @permission_classes([IsAuthenticated])
+@authentication_classes([UserrJWTAuthentication])
+def protected_view(request):
+    user = request.user
+    return Response({"message": f"مرحباً {user.FullName}"})
+
+
+
+@api_view(['GET'])
 def AllUserClint(request):
     Alluser = Userr.objects.filter(TypeOfService__in = [2,3,4])
     serializer = UserrSerializer( Alluser , many=True)
