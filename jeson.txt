@@ -110,3 +110,11 @@ verifyCode
   "Email": "ahmad@example.com",
   "Code": "952354"
 }
+
+
+
+protected_view
+{
+    curl -X GET "http://127.0.0.1:8000/protected_view/" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzU2MjM5MTQ2LCJpYXQiOjE3NTYyMzM3NDYsImp0aSI6IjhiMWU1MzY0OTk2NTRkYzI5ZTAxMzc5MGE2MjA1ZDdlIiwidXNlcl9pZCI6IjE1In0.PpHUJ5fM8EbBFMBsWB0JSOHLQV8kbREWDgyjh7WPmK0"
+
+}
