@@ -8,7 +8,7 @@ from rest_framework_simplejwt.views import TokenRefreshView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('AllClintByTypeOfService/<int:Type>' ,  views.AllClintByTypeOfService),
+    path('AllClintByTypeOfService/<int:Type>' ,  views.AllClintTypeOfService),
     path('SearchClint/' ,  views.SearchClint),
     path('AllUserClint/' ,  views.AllUserClint),
     path('CreateUserClint/' ,  views.CreateUserClient),
