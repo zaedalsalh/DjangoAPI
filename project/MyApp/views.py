@@ -69,14 +69,11 @@ def SearchClint(request):
 def CreateUserClient(request):
     serializer = UserrSerializer(data=request.data)
     if serializer.is_valid():
+        serializer.validated_data['Password'] = make_password(serializer.validated_data['Password'])
         user = serializer.save()
-        user.Password = make_password(user.Password)
         
         refresh = RefreshToken.for_user(user)
         access_token = str(refresh.access_token)
-        
-        user.save()
-        
         
         notification_data = {
         "UserId": user.id,
@@ -125,13 +122,11 @@ def CreateUserClient(request):
 def CreateUser(request):
     serializer = UserrSerializer(data=request.data)
     if serializer.is_valid():
+        serializer.validated_data['Password'] = make_password(serializer.validated_data['Password'])
         user = serializer.save()
-        user.Password = make_password(user.Password)
         
         refresh = RefreshToken.for_user(user)
         access_token = str(refresh.access_token)
-        
-        user.save()
         
         notification_data = {
             "UserId": user.id,
@@ -292,9 +287,12 @@ def rePassword(request):
         return Response({"RePassword":"كلمة المرور الجديدة نفسها القديمة "},status=400)
     try:
         user = Userr.objects.get(Email = email)
-        user.Password = make_password(Newpassword)
-        user.save()
-        return Response({"RePassword":"تم التغيير"},status=200)
+        if check_password(oldpassword, user.Password):
+            user.Password = make_password(Newpassword)
+            user.save()
+            return Response({"RePassword":"تم التغيير"},status=200)
+        else:
+            return Response({"RePassword":"كلمة المرور غير صحيحة"},status=400)
     except Userr.DoesNotExist:
         return Response({"RePassword":"كلمة المرور غير صحيحة"},status=400)
 

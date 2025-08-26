@@ -28,6 +28,7 @@ urlpatterns = [
     # jwt
     path('login/' , views.Login),
     path('refresh-access/', views.refresh_access),
+    path('protected_view/', views.protected_view),
     
     path('sendCodeToEmail/', views.sendCodeToEmail),
     path('verifyCode/', views.verifyCode),

@@ -1,0 +1,112 @@
+AllUserClint
+{}  
+
+AllClintByTypeOfService
+{
+  "Type": 2
+}
+
+SearchClint
+{
+  "FullName": "Ahmad Ali",
+  "Type": 2
+}
+
+CreateUserClint
+{
+  "FullName": "Ahmad Ali",
+  "Email": "ahmad@example.com",
+  "Password": "securepassword123",
+  "TypeOfService": 2,
+  "PhoneNumber": 1234567890,
+  "YearsOfExperience": 5,
+  "Location": "Damascus",
+  "IsNotifications": true,
+  "IsServices": true
+}
+
+CreateUser
+{
+  "FullName": "Ahmad Ali",
+  "Email": "ahmad@example.com",
+  "Password": "securepassword123",
+  "TypeOfService": 1
+}
+
+repassword
+{
+  "Email": "ahmad@example.com",
+  "OldPassword": "securepassword123",
+  "NewPassword": "newsecurepassword456"
+}
+
+reIsNotifications + id User
+نوع البيانات str ليس لbool
+{
+  "IsNotifications": "True"
+}
+
+reIsServices + id User
+{
+  "IsServices": "True"
+}
+
+moviesWithRatings
+{} 
+
+updateUserRating + id user
+{
+  "Evaluation": 4
+}
+
+getUserAndClientById + id user
+
+updateUser
+{
+  "id": 1,
+  "FullName": "Ahmad Ali",
+  "Email": "ahmad@example.com",
+  "PhoneNumber": 1000000000,
+  "Location": "Beirut, Lebanon",
+  "Img":"img" نوع البيانات string
+
+}
+
+deleteUser
+ (URL)+id
+
+addService
+{
+  "IdUser": "1",
+  "IdClient": "4",
+  "Location": "سوريا - ادلب",
+  "HourlyPrice": "5"
+}
+
+AcceptTheApplication
+{}  (URL)+id
+
+Terminado
+{}  (URL)+id
+
+login
+{
+  "Email": "ahmad@example.com",
+  "Password": "securepassword123"
+}
+
+refresh-access
+{
+  "refresh": "<refresh_token_here>"
+}
+
+sendCodeToEmail
+{
+  "Email": "ahmad@example.com"
+}
+
+verifyCode
+{
+  "Email": "ahmad@example.com",
+  "Code": "952354"
+}
