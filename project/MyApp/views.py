@@ -30,13 +30,12 @@ def AllUserClint(request):
     return Response(serializer.data)
 
 @api_view(['GET'])
-def AllClintByTypeOfService(request , Type):
+def AllClintTypeOfService(request , Type):
     if Type == 1:
         return Response({"Error":"هذا مستخدم وليس عميل"})
     Alluser = Userr.objects.filter(TypeOfService = Type)
     serializer = UserrSerializer( Alluser , many=True)
     return Response(serializer.data)
-
 
 
 
@@ -54,7 +53,6 @@ def SearchClint(request):
     serializer = UserrSerializer(results, many=True)
     return Response(serializer.data)
 
-
 @csrf_exempt
 @api_view(['POST'])
 def CreateUserClient(request):
@@ -62,7 +60,13 @@ def CreateUserClient(request):
     if serializer.is_valid():
         user = serializer.save()
         user.Password = make_password(user.Password)
+        
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
+        
         user.save()
+        
+        
         notification_data = {
         "UserId": user.id,
         "Title": f" {user.FullName} مرحباً بالعميل",
@@ -81,7 +85,13 @@ def CreateUserClient(request):
         else:
             pass
 
-        return Response(serializer.data, status=201)
+        return Response({
+            "user": serializer.data,
+            "tokens": {
+                'refresh': str(refresh),
+                'access': access_token
+            }
+        }, status=201)
     else:
         return Response(serializer.errors, status=400)
     '''
@@ -99,7 +109,6 @@ def CreateUserClient(request):
 
 '''
 
-
 @csrf_exempt
 @api_view(['POST'])
 def CreateUser(request):
@@ -107,6 +116,10 @@ def CreateUser(request):
     if serializer.is_valid():
         user = serializer.save()
         user.Password = make_password(user.Password)
+        
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
+        
         user.save()
         
         notification_data = {
@@ -122,7 +135,13 @@ def CreateUser(request):
         else:
             print(notif_serializer.errors)
 
-        return Response(serializer.data, status=201)
+        return Response({
+            "user": serializer.data,
+            "tokens": {
+                'refresh': str(refresh),
+                'access': access_token
+            }
+        }, status=201)
     else:
         return Response(serializer.errors, status=400)
 
@@ -189,7 +208,6 @@ def refresh_access(request):
 }
 '''
     
-    
 @api_view(['POST'])
 def sendCodeToEmail(request):
     email = request.data.get("Email")
@@ -229,7 +247,6 @@ def sendCodeToEmail(request):
         "message": "تم إرسال رمز التحقق إلى البريد الإلكتروني.",
     }, status=200)
 
-    
     
 @api_view(['POST'])
 def verifyCode(request):
