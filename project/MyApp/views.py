@@ -1,7 +1,7 @@
 from django.views.decorators.csrf import csrf_exempt
 
 from django.shortcuts import render
-from MyApp.models import EmailCode
+from MyApp.models import EmailCode, Services
 
 from django.utils import timezone
 from datetime import timedelta
@@ -11,7 +11,7 @@ from rest_framework.decorators import api_view , authentication_classes
 
 
 
-from MyApp.serializers import UserrSerializer  , NotificationsSerializer , UserRatingSerializer , Userr , UserRating , ServiceRequest , Notifications , ServiceRequestSerializer
+from MyApp.serializers import UserrSerializer  , NotificationsSerializer , UserRatingSerializer , Userr , UserRating , ServiceRequest , Notifications , ServiceRequestSerializer , ServicesSerializer
 
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -529,3 +529,12 @@ def RequestRejected(request, id):
     except ServiceRequest.DoesNotExist:
         return Response({"Error": "الطلب غير موجود"}, status=404)
 
+
+@api_view(['GET'])
+def selectServices(request):
+    try:
+        services = Services.objects.all()
+        serializer = ServicesSerializer(services, many=True)
+        return Response(serializer.data)
+    except Services.DoesNotExist:
+        return Response({"Error": "لا توجد خدمات متاحة"}, status=404)

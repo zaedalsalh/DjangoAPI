@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Userr, UserRating, Notifications, ServiceRequest
+from .models import Userr, UserRating, Notifications, ServiceRequest , Services
 
 
 class NotificationsSerializer(serializers.ModelSerializer):
@@ -29,3 +29,8 @@ class UserRatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserRating
         exclude = ['id' , 'UserId']
+        
+class ServicesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Services
+        fields = '__all__'

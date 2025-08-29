@@ -34,4 +34,6 @@ urlpatterns = [
     path('verifyCode/', views.verifyCode),
 
     path('RequestRejected/<int:id>' ,  views.RequestRejected),
+    
+    path('selectServices/' ,  views.selectServices),
 ]
