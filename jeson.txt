@@ -112,7 +112,7 @@ verifyCode
 }
 
 رفض الطلب
-RejectTheApplication + idService
+RequestRejected + idService
 
 
 protected_view

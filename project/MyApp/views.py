@@ -499,7 +499,7 @@ def Terminado(request, id):
         return Response({"Error": "الطلب غير موجود"}, status=404)
 
 @api_view(['DELETE'])
-def RejectTheApplication(request, id):
+def RequestRejected(request, id):
     try:
         service = ServiceRequest.objects.get(id=id)
 

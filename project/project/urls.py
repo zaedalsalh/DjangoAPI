@@ -33,5 +33,5 @@ urlpatterns = [
     path('sendCodeToEmail/', views.sendCodeToEmail),
     path('verifyCode/', views.verifyCode),
 
-    path('RejectTheApplication/<int:id>' ,  views.RejectTheApplication),
+    path('RequestRejected/<int:id>' ,  views.RequestRejected),
 ]
