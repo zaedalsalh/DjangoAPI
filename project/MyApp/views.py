@@ -498,3 +498,34 @@ def Terminado(request, id):
     except ServiceRequest.DoesNotExist:
         return Response({"Error": "الطلب غير موجود"}, status=404)
 
+@api_view(['DELETE'])
+def RejectTheApplication(request, id):
+    try:
+        service = ServiceRequest.objects.get(id=id)
+
+        Notifications.objects.filter(UserId__in=[service.IdUser.id, service.IdClient.id]).delete()
+
+
+        notif_to_User = {
+            "UserId": service.IdUser.id,
+            "Title": "تم رفض طلبك",
+            "Description": (
+                f"عزيزي {service.IdUser.FullName}، "
+                f"لقد قام {service.IdClient.FullName} برفض طلبك."
+            ),
+            "Isrequest": True
+        }
+
+        notif_serializer = NotificationsSerializer(data=notif_to_User)
+        if notif_serializer.is_valid():
+            notif_serializer.save()
+        else:
+            print("Notification Error:", notif_serializer.errors)
+
+        service.delete()
+
+        return Response({"Ok": "تم رفض الطلب وحذف كل الإشعارات المرتبطة به"}, status=200)
+
+    except ServiceRequest.DoesNotExist:
+        return Response({"Error": "الطلب غير موجود"}, status=404)
+

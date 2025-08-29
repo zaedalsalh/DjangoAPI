@@ -111,6 +111,8 @@ verifyCode
   "Code": "952354"
 }
 
+رفض الطلب
+RejectTheApplication + idService
 
 
 protected_view
