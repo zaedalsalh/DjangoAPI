@@ -533,7 +533,7 @@ def RequestRejected(request, id):
 @api_view(['GET'])
 def selectServices(request):
     try:
-        services = Services.objects.all()
+        services = Services.objects.exclude(id=1)
         serializer = ServicesSerializer(services, many=True)
         return Response(serializer.data)
     except Services.DoesNotExist:
