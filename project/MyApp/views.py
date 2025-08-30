@@ -177,9 +177,7 @@ def Login(request):
         
             user = UserrSerializer(user)
             return Response({
-                "id": user.data['id'],
-                "FullName": user.data['FullName'],
-                "TypeOfService": user.data['TypeOfService'],
+                "user": user.data,
                 "refresh": str(refresh),
                 "access": access_token
             })
