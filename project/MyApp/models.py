@@ -12,7 +12,7 @@ class Userr(models.Model):
     Email = models.EmailField(unique=True)
     Password = models.CharField(max_length=128)
     TypeOfService = models.ForeignKey(Services, on_delete=models.CASCADE)
-    PhoneNumber = models.IntegerField(null=True, blank=True)
+    PhoneNumber = models.CharField(null=True, blank=True)
     YearsOfExperience = models.IntegerField(null=True, blank=True)
     Location = models.CharField(null=True, blank=True)
     img = models.ImageField(upload_to='UserImg', null=True, blank=True)
@@ -49,7 +49,7 @@ class ServiceRequest(models.Model):
     IdClient = models.ForeignKey(Userr, on_delete=models.CASCADE, related_name='requests_received')
     Location = models.CharField()
     HourlyPrice = models.IntegerField()
-    ClientOrderStatus = models.BooleanField(default=False)
+    ClientOrderStatus = models.IntegerField(default=0)
     
 
     def __str__(self):

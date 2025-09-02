@@ -1,6 +1,6 @@
 from django.views.decorators.csrf import csrf_exempt
 
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from MyApp.models import EmailCode, Services
 
 from django.utils import timezone
@@ -23,7 +23,7 @@ from django.conf import settings
 from django.contrib.auth.hashers import make_password, check_password
 
 
-from .authentication import UserrJWTAuthentication 
+from .authentication import UserrJWTAuthentication , superuser_required
 
 
 @api_view(['GET'])
@@ -33,12 +33,26 @@ def protected_view(request):
     return Response({"message": f"مرحباً {user.FullName}"})
 
 
-
 @api_view(['GET'])
 def AllUserClint(request):
-    Alluser = Userr.objects.filter(TypeOfService__in = [2,3,4])
-    serializer = UserrSerializer( Alluser , many=True)
-    return Response(serializer.data)
+    all_users = Userr.objects.filter(TypeOfService__in=[2, 3, 4])
+    serializer = UserrSerializer(all_users, many=True)
+
+    data = []
+    for user, serialized in zip(all_users, serializer.data):
+        data.append({
+            "id": serialized['id'],
+            "FullName": serialized['FullName'],
+            "Email": serialized['Email'],
+            "PhoneNumber": serialized['PhoneNumber'],
+            "YearsOfExperience": serialized['YearsOfExperience'],
+            "Location": serialized['Location'],
+            "img": serialized['img'],
+            "TypeOfService": user.TypeOfService.ServiceName,
+        })
+
+    return Response(data)
+
 
 @api_view(['GET'])
 def AllClintTypeOfService(request , Type):
@@ -455,12 +469,13 @@ def addService(request):
     "Location":"سوريا - ادلب ",
     "HourlyPrice":"5"
 }
-@api_view(['GET'])
+@api_view(['PUT'])
 def AcceptTheApplication(request, id):
     try:
         service = ServiceRequest.objects.get(id=id)
-        service.ClientOrderStatus = True
+        service.ClientOrderStatus = 1
         service.save()
+        Notifications.objects.filter(UserId__in=[service.IdUser.id, service.IdClient.id]).delete()
         
         notif_to_User = {
             "UserId": service.IdUser.id,
@@ -485,24 +500,12 @@ def AcceptTheApplication(request, id):
 
 
 
-@api_view(['DELETE'])
-def Terminado(request, id):
-    try:
-        service = ServiceRequest.objects.get(id=id)
-        Notifications.objects.filter(UserId__in=[service.IdUser.id, service.IdClient.id]).delete()
-        service.delete()
-        return Response({"OK":"تم حذف كلشي"},status=200)
-
-    except ServiceRequest.DoesNotExist:
-        return Response({"Error": "الطلب غير موجود"}, status=404)
-
-@api_view(['DELETE'])
+@api_view(['PUT'])
 def RequestRejected(request, id):
     try:
         service = ServiceRequest.objects.get(id=id)
-
+        service.ClientOrderStatus = 2
         Notifications.objects.filter(UserId__in=[service.IdUser.id, service.IdClient.id]).delete()
-
 
         notif_to_User = {
             "UserId": service.IdUser.id,
@@ -520,7 +523,6 @@ def RequestRejected(request, id):
         else:
             print("Notification Error:", notif_serializer.errors)
 
-        service.delete()
 
         return Response({"Ok": "تم رفض الطلب وحذف كل الإشعارات المرتبطة به"}, status=200)
 
@@ -536,3 +538,71 @@ def selectServices(request):
         return Response(serializer.data)
     except Services.DoesNotExist:
         return Response({"Error": "لا توجد خدمات متاحة"}, status=404)
+
+
+
+
+from django.db.models import Count, Q
+
+@superuser_required
+def Index(request):
+    user_counts = Userr.objects.aggregate(
+        AllUserClint=Count('id', filter=Q(TypeOfService__in=[2, 3, 4])),
+        AllUser=Count('id', filter=Q(TypeOfService=1)),
+        AllUserClintJoiner=Count('id', filter=Q(TypeOfService=2)),
+        AllUserClintBlacksmith=Count('id', filter=Q(TypeOfService=3)),
+        AllUserClintElectrician=Count('id', filter=Q(TypeOfService=4)),
+    )
+    
+    service_request_counts = ServiceRequest.objects.aggregate(
+        TrueCount=Count('id', filter=Q(ClientOrderStatus=1)),
+        FalseCount=Count('id', filter=Q(ClientOrderStatus=2)),
+    )
+
+    chart_data = [
+        user_counts['AllUserClintJoiner'],
+        user_counts['AllUserClintBlacksmith'],
+        user_counts['AllUserClintElectrician']
+    ]
+
+    userrating = list(
+        UserRating.objects.filter(
+            Evaluation__range=(1, 5),
+            UserId__TypeOfService__in=[2, 3, 4]
+        ).values(
+            'id',
+            'UserId__FullName',
+            'UserId__Email',
+            'Evaluation'
+        )
+    )
+    AllUserClintUser = Userr.objects.filter(TypeOfService__in=[2, 3, 4])
+    all_services = Services.objects.exclude(id=1)
+    allServiceRequest = ServiceRequest.objects.all()
+
+    return render(request, 'home.html', {
+        "counterAllUserClint": user_counts['AllUserClint'],
+        "counterAllUser": user_counts['AllUser'],
+        "counterAllServiceRequestTrue": service_request_counts['TrueCount'],
+        "counterAllServiceRequestFalse": service_request_counts['FalseCount'],
+        "chart_data": chart_data,  
+        "userrating": userrating,
+        "AllUserClintUser": AllUserClintUser,
+        "all_services": all_services,
+        "allServiceRequest": allServiceRequest,
+    })
+
+def deleteuser(request , id_user):
+    user = Userr.objects.get(id = id_user)
+    user.delete()
+    return redirect('index')
+
+def adduser(request):
+    if request.method == 'POST':
+        user = UserrSerializer(data=request.POST)
+        if user.is_valid():
+            user.save()
+        return redirect('index')
+    else:
+        user = UserrSerializer()
+        return redirect('index')
