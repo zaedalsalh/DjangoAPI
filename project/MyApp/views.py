@@ -37,6 +37,7 @@ def protected_view(request):
 def AllUserClint(request):
     all_users = Userr.objects.filter(TypeOfService__in=[2, 3, 4])
     serializer = UserrSerializer(all_users, many=True)
+    Evaluation = UserRating.objects.all()
 
     data = []
     for user, serialized in zip(all_users, serializer.data):
@@ -49,6 +50,7 @@ def AllUserClint(request):
             "Location": serialized['Location'],
             "img": serialized['img'],
             "TypeOfService": user.TypeOfService.ServiceName,
+            'Evaluation':Evaluation.get(UserId=user.id).Evaluation if Evaluation.filter(UserId=user.id).exists() else None
         })
 
     return Response(data)
