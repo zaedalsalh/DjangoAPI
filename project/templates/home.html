@@ -467,6 +467,16 @@ body.dark-mode .table-hover tbody tr:hover {
   transform: scale(1.1) rotate(30deg);
 }
 </style>
+<script>
+window.addEventListener('load', () => {
+    const hash = window.location.hash.replace('#', '');
+    if(hash) {
+        showSection(hash);
+    } else {
+        showSection('home');
+    }
+});
+</script>
 </head>
 <body>
 
@@ -737,14 +747,7 @@ body.dark-mode .table-hover tbody tr:hover {
 
 <script>
 
-window.addEventListener('load', () => {
-    const hash = window.location.hash.replace('#', '');
-    if(hash) {
-        showSection(hash);
-    } else {
-        showSection('home');
-    }
-});
+
 
 
 const sidebar = document.getElementById('sidebar');
