@@ -77,10 +77,23 @@ def SearchClint(request):
         results = Userr.objects.filter(FullName__icontains=FullName, TypeOfService__in=[2,3,4])
 
     else:
-        results = Userr.objects.all()
+        results = Userr.objects.filter(TypeOfService__in=[2,3,4])
 
     serializer = UserrSerializer(results, many=True)
-    return Response(serializer.data)
+    data = []
+    for user, serialized in zip(results, serializer.data):
+        data.append({
+            "id": serialized['id'],
+            "FullName": serialized['FullName'],
+            "Email": serialized['Email'],
+            "PhoneNumber": serialized['PhoneNumber'],
+            "YearsOfExperience": serialized['YearsOfExperience'],
+            "Location": serialized['Location'],
+            "img": serialized['img'],
+            "IsServices": serialized['IsServices'],
+            "TypeOfService": user.TypeOfService.ServiceName,
+        })
+    return Response(data)
 
 @csrf_exempt
 @api_view(['POST'])
@@ -625,7 +638,6 @@ def adduser(request):
         return redirect('/index/#users')
 
 
-
 def AddNotification(request):
     if request.method == 'POST':
         data = request.POST.copy()
@@ -635,13 +647,16 @@ def AddNotification(request):
         description = data.get('Description')
 
         if user_id == 'AllUser':
-            for user in Userr.objects.all():
-                Notifications.objects.create(
+            users = Userr.objects.all()
+            notifications = [
+                Notifications(
                     UserId=user,
                     Title=title,
                     Description=description,
                     Isrequest=False
-                )
+                ) for user in users
+            ]
+            Notifications.objects.bulk_create(notifications)  # create all notifications
         else:
             user = get_object_or_404(Userr, id=user_id)
             Notifications.objects.create(
@@ -652,4 +667,5 @@ def AddNotification(request):
             )
 
         return redirect('/index/#notifications')
+
     return redirect('/index/#notifications')

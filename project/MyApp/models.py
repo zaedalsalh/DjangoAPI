@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.postgres.indexes import HashIndex
+from django.contrib.postgres.indexes import HashIndex , GinIndex
 
 class Services(models.Model):
     ServiceName = models.CharField(max_length=255)
@@ -23,6 +23,7 @@ class Userr(models.Model):
         indexes = [
             HashIndex(fields=['id'], name='id_hash_idx'),
             HashIndex(fields=['Email'], name='email_hash_idx'),
+            GinIndex(name="full_name_trgm_idx",fields=["FullName"],opclasses=["gin_trgm_ops"]),
         ]
 
 
