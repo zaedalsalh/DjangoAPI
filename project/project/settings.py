@@ -83,11 +83,11 @@ WSGI_APPLICATION = 'project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres.kxmmprzffnapfxndhefj',
-        'PASSWORD': '681524046Zaed#@',
-        'HOST': 'aws-0-eu-north-1.pooler.supabase.com',
-        'PORT': '6543', 
+        'NAME': 'railway',
+        'USER': 'postgres',
+        'PASSWORD': 'BeLEFqdBGFoLtajETJqiRrTKKwjSiJwj',
+        'HOST': 'caboose.proxy.rlwy.net',
+        'PORT': '49389',
     }
 }
 
