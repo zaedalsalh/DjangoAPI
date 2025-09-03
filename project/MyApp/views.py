@@ -49,6 +49,7 @@ def AllUserClint(request):
             "YearsOfExperience": serialized['YearsOfExperience'],
             "Location": serialized['Location'],
             "img": serialized['img'],
+            "IsServices": serialized['IsServices'],
             "TypeOfService": user.TypeOfService.ServiceName,
             'Evaluation':Evaluation.get(UserId=user.id).Evaluation if Evaluation.filter(UserId=user.id).exists() else None
         })
@@ -74,6 +75,8 @@ def SearchClint(request):
         results = Userr.objects.filter(FullName__icontains=FullName, TypeOfService_id=Type)
     elif FullName:
         results = Userr.objects.filter(FullName__icontains=FullName, TypeOfService__in=[2,3,4])
+    elif not FullName and not Type:
+        results = Userr.objects.all()
     else:
         return Response({"error": "الرجاء إدخال الاسم للبحث"}, status=400)
 
