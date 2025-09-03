@@ -75,10 +75,9 @@ def SearchClint(request):
         results = Userr.objects.filter(FullName__icontains=FullName, TypeOfService_id=Type)
     elif FullName:
         results = Userr.objects.filter(FullName__icontains=FullName, TypeOfService__in=[2,3,4])
-    elif not FullName and not Type:
-        results = Userr.objects.all()
+
     else:
-        return Response({"error": "الرجاء إدخال الاسم للبحث"}, status=400)
+        results = Userr.objects.all()
 
     serializer = UserrSerializer(results, many=True)
     return Response(serializer.data)
