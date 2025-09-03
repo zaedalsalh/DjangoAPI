@@ -40,4 +40,5 @@ urlpatterns = [
     path('index/', views.Index, name='index'),
     path('deleteuser/<int:id_user>', views.deleteuser,  name='deleteuser'),
     path('AddUser/', views.adduser,  name='AddUser'),
+    path('AddNotification/', views.AddNotification,  name='AddNotification'),
 ]

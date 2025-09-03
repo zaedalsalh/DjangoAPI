@@ -278,7 +278,7 @@ h3::after {
 /* تحسينات للرسوم البيانية */
 .chart-container {
   position: relative;
-  height: 250px;
+  height: 300px;
   width: 100%;
 }
 
@@ -478,11 +478,11 @@ body.dark-mode .table-hover tbody tr:hover {
     </div>
     <div class="p-3">
         <ul class="nav flex-column">
-            <li class="nav-item"><a class="nav-link active"  onclick="showSection('home')"><i class="bi bi-house-door-fill"></i> الرئيسية</a></li>
-            <li class="nav-item"><a class="nav-link"  onclick="showSection('users')"><i class="bi bi-people-fill"></i> المستخدمين</a></li>
-            <li class="nav-item"><a class="nav-link"  onclick="showSection('requests')"><i class="bi bi-clipboard-check"></i> الطلبات</a></li>
-            <li class="nav-item"><a class="nav-link"  onclick="showSection('ratings')"><i class="bi bi-star-fill"></i> التقييمات</a></li>
-            <li class="nav-item"><a class="nav-link"  onclick="showSection('notifications')"><i class="bi bi-bell-fill"></i> الإشعارات</a></li>
+            <li class="nav-item"><a class="nav-link active" onclick="showSection('home')"><i class="bi bi-house-door-fill"></i> الرئيسية</a></li>
+            <li class="nav-item"><a class="nav-link" href="#users"  onclick="showSection('users')"><i class="bi bi-people-fill"></i> المستخدمين</a></li>
+            <li class="nav-item"><a class="nav-link" href="#requests" onclick="showSection('requests')"><i class="bi bi-clipboard-check"></i> الطلبات</a></li>
+            <li class="nav-item"><a class="nav-link" href="#ratings" onclick="showSection('ratings')"><i class="bi bi-star-fill"></i> التقييمات</a></li>
+            <li class="nav-item"><a class="nav-link" href="#notifications" onclick="showSection('notifications')"><i class="bi bi-bell-fill"></i> الإشعارات</a></li>
         </ul>
     </div>
 </div>
@@ -643,8 +643,21 @@ body.dark-mode .table-hover tbody tr:hover {
     <button class="btn btn-success mb-3" onclick="openModal('notificationModal')"><i class="bi bi-plus-circle"></i> إضافة إشعار</button>
     <div class="table-responsive">
         <table class="table table-bordered table-hover align-middle">
-            <thead><tr><th>#</th><th>المستخدم</th><th>العنوان</th><th>الوصف</th><th>نوع الإشعار</th><th>إجراءات</th></tr></thead>
-            <tbody id="notificationsTable"></tbody>
+            <thead><tr><th>المستخدم</th><th>العنوان</th><th>الوصف</th><th>نوع الإشعار</th></tr></thead>
+            <tbody id="notificationsTable">
+              {% for i in AllNotifications %}
+              <tr>
+                <td>{{i.UserId.FullName}}</td>
+                <td>{{i.Title}}</td>
+                <td>{{i.Description}}</td>
+                {% if i.Isrequest == False %}
+                <td>اشعار نضام</td>
+                {% else %}
+                <td>اشعار طلب</td>
+                {% endif %}
+              </tr>
+              {% endfor %}
+            </tbody>
         </table>
     </div>
 </div>
@@ -656,8 +669,7 @@ body.dark-mode .table-hover tbody tr:hover {
 <div class="modal-dialog modal-dialog-centered">
   <div class="modal-content">
     <div class="modal-header">
-      <h5 class="modal-title"><i class="bi bi-person-plus-fill"></i>&nbsp; &nbsp; إضافة/تعديل مستخدم</h5>
-        <button class="btn-close" data-bs-dismiss="modal"></button>
+      <h5 class="modal-title"><i class="bi bi-person-plus-fill"></i>&nbsp; إضافة/تعديل مستخدم</h5>
       </div>
       <div class="modal-body">
        <form id="userForm" method="post" action="{% url 'AddUser' %}" >
@@ -685,7 +697,32 @@ body.dark-mode .table-hover tbody tr:hover {
 
 
 <!-- Notification Modal -->
-<div class="modal fade" id="notificationModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 class="modal-title"><i class="bi bi-plus-circle"></i> إضافة إشعار</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="notificationForm"><div class="mb-3"><label>المستخدم</label><input type="text" class="form-control" required></div><div class="mb-3"><label>العنوان</label><input type="text" class="form-control" required></div><div class="mb-3"><label>الوصف</label><textarea class="form-control"></textarea></div><div class="mb-3"><label>نوع الإشعار</label><select class="form-control"><option>عادية</option><option>طلب</option></select></div><button type="submit" class="btn btn-success"><i class="bi bi-check-circle"></i> حفظ</button></form></div></div></div></div>
+<div class="modal fade" id="notificationModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+      <h5 class="modal-title"><i class="bi bi-plus-circle">&nbsp;</i> إضافة إشعار</h5>
+      </div>
+    <div class="modal-body">
+      <form id="notificationForm" method="post" action="{% url 'AddNotification' %}">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label>المستخدم</label>
+          <select name="UserId" class="form-control">
+            <option value="AllUser">كل المستخدمين</option>
+            {% for i in AllUserClintUser %}
+            <option value="{{ i.id }}">{{ i.FullName }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="mb-3"><label>العنوان</label><input name="Title" type="text" class="form-control" required></div>
+        <div class="mb-3"><label>الوصف</label><textarea name="Description" class="form-control"></textarea></div>
+        <button type="submit" class="btn btn-success"><i class="bi bi-check-circle"></i> حفظ</button>
+      </form>
+    </div>
+  </div>
+</div>
+</div>
 
 
 {{ chart_data|json_script:"chart-data" }}
@@ -699,6 +736,17 @@ body.dark-mode .table-hover tbody tr:hover {
 </script>
 
 <script>
+
+window.addEventListener('load', () => {
+    const hash = window.location.hash.replace('#', '');
+    if(hash) {
+        showSection(hash);
+    } else {
+        showSection('home');
+    }
+});
+
+
 const sidebar = document.getElementById('sidebar');
 document.getElementById('sidebarToggle').addEventListener('click', ()=> {
     sidebar.classList.toggle('show');

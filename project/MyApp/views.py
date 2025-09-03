@@ -1,6 +1,6 @@
 from django.views.decorators.csrf import csrf_exempt
 
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from MyApp.models import EmailCode, Services
 
 from django.utils import timezone
@@ -576,11 +576,12 @@ def Index(request):
             'UserId__FullName',
             'UserId__Email',
             'Evaluation'
-        )
+        ).order_by('Evaluation').reverse()
     )
     AllUserClintUser = Userr.objects.filter(TypeOfService__in=[2, 3, 4])
     all_services = Services.objects.exclude(id=1)
     allServiceRequest = ServiceRequest.objects.all()
+    AllNotifications = Notifications.objects.all()
 
     return render(request, 'home.html', {
         "counterAllUserClint": user_counts['AllUserClint'],
@@ -592,19 +593,61 @@ def Index(request):
         "AllUserClintUser": AllUserClintUser,
         "all_services": all_services,
         "allServiceRequest": allServiceRequest,
+        'AllNotifications':AllNotifications,
     })
 
 def deleteuser(request , id_user):
     user = Userr.objects.get(id = id_user)
     user.delete()
-    return redirect('index')
+    return redirect('/index/#users')
 
 def adduser(request):
     if request.method == 'POST':
-        user = UserrSerializer(data=request.POST)
+        data = request.POST.copy()
+        data['Password'] = make_password(data.get('Password'))
+        user = UserrSerializer(data=data)
         if user.is_valid():
-            user.save()
-        return redirect('index')
+            userSaveed = user.save()
+
+            refresh = RefreshToken.for_user(userSaveed)
+            access_token = str(refresh.access_token)
+
+            UserRating.objects.create(
+                UserId = userSaveed,
+                Evaluation = 1.0
+            )
+            
+
+        return redirect('/index/#users')
     else:
-        user = UserrSerializer()
-        return redirect('index')
+        return redirect('/index/#users')
+
+
+
+def AddNotification(request):
+    if request.method == 'POST':
+        data = request.POST.copy()
+
+        user_id = data.get('UserId')
+        title = data.get('Title')
+        description = data.get('Description')
+
+        if user_id == 'AllUser':
+            for user in Userr.objects.all():
+                Notifications.objects.create(
+                    UserId=user,
+                    Title=title,
+                    Description=description,
+                    Isrequest=False
+                )
+        else:
+            user = get_object_or_404(Userr, id=user_id)
+            Notifications.objects.create(
+                UserId=user,
+                Title=title,
+                Description=description,
+                Isrequest=False
+            )
+
+        return redirect('/index/#notifications')
+    return redirect('/index/#notifications')
