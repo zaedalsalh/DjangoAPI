@@ -394,7 +394,7 @@ def getUserAndClientById(request , id):
             return Response(data , status=200)    
     except Userr.DoesNotExist:
         return Response({"Error":"المستخدم غير موجود"})
-    
+
 
 @api_view(['PUT'])
 def updateUser(request):

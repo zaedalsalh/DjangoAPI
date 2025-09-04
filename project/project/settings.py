@@ -40,15 +40,6 @@ INSTALLED_APPS = [
     ]
 
 
-# img
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'divtg1bzt',
-    'API_KEY': '143482474252734',
-    'API_SECRET': 'cgSilkyBIz8aL0rE6ZP_1Dad6Ac'
-}
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
-
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'MyApp.authentication.UserrJWTAuthentication',
@@ -175,3 +166,13 @@ SIMPLE_JWT = {
 
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+
+
+# img
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'divtg1bzt',
+    'API_KEY': '143482474252734',
+    'API_SECRET': 'cgSilkyBIz8aL0rE6ZP_1Dad6Ac',
+}
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
