@@ -15,7 +15,7 @@ class Userr(models.Model):
     PhoneNumber = models.CharField(null=True, blank=True)
     YearsOfExperience = models.IntegerField(null=True, blank=True)
     Location = models.CharField(null=True, blank=True)
-    img = models.ImageField(upload_to='UserImg', null=True, blank=True)
+    img = models.ImageField(null=True, blank=True)
     IsNotifications = models.BooleanField(default=True)
     IsServices = models.BooleanField(default=True)
 

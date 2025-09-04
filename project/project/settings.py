@@ -31,14 +31,22 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
-    'MyApp',
-    'rest_framework',
-    'rest_framework_simplejwt',
-    
     'cloudinary',
     'cloudinary_storage',
     
-]
+    'MyApp',
+    'rest_framework',
+    'rest_framework_simplejwt',
+    ]
+
+
+# img
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'divtg1bzt',
+    'API_KEY': '143482474252734',
+    'API_SECRET': 'cgSilkyBIz8aL0rE6ZP_1Dad6Ac'
+}
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 
 REST_FRAMEWORK = {
@@ -135,9 +143,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
@@ -170,11 +175,3 @@ SIMPLE_JWT = {
 
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
-# img
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'divtg1bzt',
-    'API_KEY': '143482474252734',
-    'API_SECRET': 'cgSilkyBIz8aL0rE6ZP_1Dad6Ac'
-}
