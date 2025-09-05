@@ -15,7 +15,7 @@ class Userr(models.Model):
     PhoneNumber = models.CharField(null=True, blank=True)
     YearsOfExperience = models.IntegerField(null=True, blank=True)
     Location = models.CharField(null=True, blank=True)
-    img = models.ImageField(null=True, blank=True)
+    img = models.ImageField(null=True, blank=True , upload_to='user_images/' , default='https://res.cloudinary.com/divtg1bzt/image/upload/v1757035773/userImg_catnzo.jpg')
     IsNotifications = models.BooleanField(default=True)
     IsServices = models.BooleanField(default=True)
 

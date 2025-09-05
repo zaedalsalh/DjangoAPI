@@ -26,6 +26,17 @@ from django.contrib.auth.hashers import make_password, check_password
 from .authentication import UserrJWTAuthentication , superuser_required
 
 
+
+import cloudinary
+import cloudinary.uploader
+cloudinary.config( 
+  cloud_name = "divtg1bzt", 
+  api_key = "143482474252734", 
+  api_secret = "cgSilkyBIz8aL0rE6ZP_1Dad6Ac",
+  secure = True
+)
+
+
 @api_view(['GET'])
 @authentication_classes([UserrJWTAuthentication])
 def protected_view(request):
@@ -403,6 +414,10 @@ def updateUser(request):
         user = Userr.objects.get(id = id_user)
         user = UserrSerializer(user , data = request.data , partial=True)
         if user.is_valid():
+            image_file = user.validated_data.get('img')
+            if image_file:
+                upload_result = cloudinary.uploader.upload(image_file, folder="users/")
+                user.validated_data['img'] = upload_result.get('secure_url')
             user.save()
             return Response(user.data , status=200)
         else:
