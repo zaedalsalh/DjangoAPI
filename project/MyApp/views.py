@@ -121,7 +121,7 @@ def CreateUserClient(request):
         "UserId": user.id,
         "Title": f" {user.FullName} مرحباً بالعميل",
         "Description": "نرحب بك في تطبيقنا. نتمنى لك تجربة رائعة مع خدماتنا.",
-        "Isrequest": False
+        "Isrequest": 1
                         }
         
         UserRating.objects.create(
@@ -174,7 +174,7 @@ def CreateUser(request):
             "UserId": user.id,
             "Title": f" مرحباً {user.FullName}",
             "Description": "نرحب بك في تطبيقنا. نتمنى لك تجربة رائعة.",
-            "Isrequest": False
+            "Isrequest": 1
         }
         notif_serializer = NotificationsSerializer(data=notification_data)
         if notif_serializer.is_valid():
@@ -465,7 +465,7 @@ def addService(request):
                 f"لقد تم إرسال طلبك إلى {service.IdClient.FullName}. "
                 "سوف يتم إشعارك فور قيام العميل بقبول أو رفض الطلب. "
             ),
-            "Isrequest": False
+            "Isrequest": 1
         }
         notifUser = NotificationsSerializer(data=notif_to_User)
         if notifUser.is_valid():
@@ -479,7 +479,7 @@ def addService(request):
                     f"لقد استلمت طلباً جديداً من {service.IdUser.FullName}. "
                     "يرجى مراجعة تفاصيل الطلب لاتخاذ الإجراء المناسب (قبول أو رفض)."
                 ),
-                "Isrequest": False
+                "Isrequest": 1
             }
             notifClient = NotificationsSerializer(data=notif_to_Client)
             if notifClient.is_valid():
@@ -516,7 +516,7 @@ def AcceptTheApplication(request, id):
                 f"عزيزي {getattr(service.IdUser, 'FullName', service.IdUser.FullName)}, "
                 f"لقد تم قبول طلبك من قبل {getattr(service.IdClient, 'FullName', service.IdClient.FullName)}."
             ),
-            "Isrequest": True
+            "Isrequest": 2
         }
 
         notif_serializer = NotificationsSerializer(data=notif_to_User)
@@ -546,7 +546,7 @@ def RequestRejected(request, id):
                 f"عزيزي {service.IdUser.FullName}، "
                 f"لقد قام {service.IdClient.FullName} برفض طلبك."
             ),
-            "Isrequest": True
+            "Isrequest": 3
         }
 
         notif_serializer = NotificationsSerializer(data=notif_to_User)
@@ -668,7 +668,7 @@ def AddNotification(request):
                     UserId=user,
                     Title=title,
                     Description=description,
-                    Isrequest=False
+                    Isrequest=1
                 ) for user in users
             ]
             Notifications.objects.bulk_create(notifications)  # create all notifications
@@ -678,7 +678,7 @@ def AddNotification(request):
                 UserId=user,
                 Title=title,
                 Description=description,
-                Isrequest=False
+                Isrequest=1
             )
 
         return redirect('/index/#notifications')

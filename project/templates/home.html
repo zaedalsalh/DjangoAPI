@@ -653,10 +653,12 @@ body.dark-mode .table-hover tbody tr:hover {
                 <td>{{i.UserId.FullName}}</td>
                 <td>{{i.Title}}</td>
                 <td>{{i.Description}}</td>
-                {% if i.Isrequest == False %}
+                {% if i.Isrequest == 1 %}
                 <td>اشعار نضام</td>
-                {% else %}
-                <td>اشعار طلب</td>
+                {% elif i.Isrequest == 2 %}
+                <td>قبول الطلب</td>
+                {% elif i.Isrequest == 3 %}
+                <td>رفض الطلب</td>
                 {% endif %}
               </tr>
               {% endfor %}

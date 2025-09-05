@@ -39,7 +39,7 @@ class Notifications(models.Model):
     UserId = models.ForeignKey(Userr, on_delete=models.CASCADE)
     Title = models.CharField(max_length=255)
     Description = models.CharField(max_length=500)
-    Isrequest = models.BooleanField(default=False)
+    Isrequest = models.IntegerField()
 
     def __str__(self):
         return f'{self.Title} - {self.UserId}'

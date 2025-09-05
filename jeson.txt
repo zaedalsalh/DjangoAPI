@@ -86,7 +86,7 @@ addService
 AcceptTheApplication
 {}  (URL)+id
 
-Terminado
+RequestRejected   
 {}  (URL)+id
 
 login
