@@ -398,7 +398,6 @@ def getUserAndClientById(request , id):
         serializer = UserrSerializer(user)
         data = serializer.data
         if (data['TypeOfService']) == 1 :
-            data.pop('requests_made', None)
             data.pop('requests_received', None)
             return Response(data , status=200)
         else:

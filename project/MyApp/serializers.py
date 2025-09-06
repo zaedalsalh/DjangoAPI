@@ -9,6 +9,7 @@ class NotificationsSerializer(serializers.ModelSerializer):
 
 
 class ServiceRequestSerializer(serializers.ModelSerializer):
+    UserName = serializers.CharField(source='IdUser.FullName', read_only=True)
     class Meta:
         model = ServiceRequest
         exclude = ['id']
@@ -16,7 +17,6 @@ class ServiceRequestSerializer(serializers.ModelSerializer):
 
 class UserrSerializer(serializers.ModelSerializer):
     notifications = NotificationsSerializer(source='notifications_set', many=True, read_only=True)
-    requests_made = ServiceRequestSerializer(many=True, read_only=True)
     requests_received = ServiceRequestSerializer(many=True, read_only=True)
 
     class Meta:
