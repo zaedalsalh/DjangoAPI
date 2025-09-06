@@ -536,6 +536,7 @@ def RequestRejected(request, id):
     try:
         service = ServiceRequest.objects.get(id=id)
         service.ClientOrderStatus = 2
+        service.save()
         Notifications.objects.filter(UserId__in=[service.IdUser.id, service.IdClient.id]).delete()
 
         notif_to_User = {
